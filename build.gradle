@@ -1,0 +1,30 @@
+plugins {
+    id 'groovy'
+    id 'java'
+}
+
+group 'com.derrops'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+ext {
+    awsSdkVersion = '1.11.759'
+}
+
+dependencies {
+
+    implementation platform("com.amazonaws:aws-java-sdk-bom:${awsSdkVersion}")
+
+    implementation 'com.amazonaws:aws-java-sdk-s3'
+    implementation 'com.amazonaws:aws-java-sdk-lambda'
+
+    implementation 'org.codehaus.groovy:groovy-all:2.3.11'
+    implementation gradleApi()
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
