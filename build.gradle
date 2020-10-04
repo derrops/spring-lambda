@@ -1,6 +1,9 @@
 plugins {
     id 'groovy'
+    id 'java-gradle-plugin'
 }
+
+apply plugin: 'idea'
 
 group 'com.derrops'
 version '1.0-SNAPSHOT'
@@ -27,4 +30,23 @@ dependencies {
 
     implementation gradleApi()
     testCompile group: 'junit', name: 'junit', version: '4.12'
+
+
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+
+gradlePlugin {
+    plugins {
+        simplePlugin {
+            id = 'com.derrops.springlambda'
+            implementationClass = 'com.derrops.SpringLambdaPlugin'
+        }
+    }
 }
