@@ -60,12 +60,12 @@ class SpringLambdaPlugin implements Plugin<Project> {
 
 
         def deployLayer = project.tasks.register("deployLayer", PublishToS3.class) { deployLayer ->
-            deployLayer.dependsOn(buildLayerArchive)
+
+            def buildLayerArchiveTask = project.tasks.findByName("buildLayerArchive")
+            deployLayer.dependsOn(buildLayerArchiveTask)
 
             deployLayer.bucket = extension.bucket
-
-            // TODO - should rather try and use the output of the buildLayerArchiveTask
-            deployLayer.file = new File(project.buildDir.path + "/distributions/" + project.name + "-" + project.version + "-" + extension.layerClassifier + ".zip")
+            deployLayer.file = buildLayerArchiveTask.outputs.files.singleFile
 
         }
 
