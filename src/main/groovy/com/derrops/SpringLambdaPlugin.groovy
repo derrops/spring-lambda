@@ -3,9 +3,7 @@ package com.derrops
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.internal.tasks.compile.CompileJavaBuildOperationType
 import org.gradle.api.tasks.bundling.Zip
-import org.gradle.launcher.daemon.protocol.Build
 
 class SpringLambdaPlugin implements Plugin<Project> {
 
@@ -15,12 +13,6 @@ class SpringLambdaPlugin implements Plugin<Project> {
         SpringLambdaPluginExtension extension = project.getExtensions().create("springLambda", SpringLambdaPluginExtension.class)
 
 
-
-
-
-
-
-        //def compileJava = project.tasks.named("compileJava")
         def buildFunctionArchive = project.tasks.register("buildFunctionArchive", Zip.class) { buildFunctionArchive ->
             
 
@@ -59,13 +51,37 @@ class SpringLambdaPlugin implements Plugin<Project> {
         }
 
 
-        def deployLayer = project.tasks.register("deployLayer", PublishToS3.class) { deployLayer ->
+        def publishLayerArchiveToS3 = project.tasks.register("publishLayerArchiveToS3", PublishToS3.class) { deployLayer ->
 
             def buildLayerArchiveTask = project.tasks.findByName("buildLayerArchive")
             deployLayer.dependsOn(buildLayerArchiveTask)
 
             deployLayer.bucket = extension.bucket
             deployLayer.file = buildLayerArchiveTask.outputs.files.singleFile
+
+        }
+
+
+        def publishFunctionArchiveToS3 = project.tasks.register("publishFunctionArchiveToS3", PublishToS3.class) { deployFunction ->
+
+            def buildFunctionArchiveTask = project.tasks.findByName("buildFunctionArchive")
+            deployFunction.dependsOn(buildFunctionArchiveTask)
+
+            deployFunction.bucket = extension.bucket
+            deployFunction.file = buildFunctionArchiveTask.outputs.files.singleFile
+
+        }
+
+        def publishLambdaLayerVersion = project.tasks.register("publishLambdaLayerVersion", PublishLambdaTask.class) { publishLambdaLayerVersion ->
+
+            def publishLayerArchiveToS3Task = project.tasks.findByName("publishLayerArchiveToS3")
+            def buildLayerArchiveTask = project.tasks.findByName("buildLayerArchive")
+
+            publishLambdaLayerVersion.dependsOn(publishLayerArchiveToS3Task)
+            publishLambdaLayerVersion.dependsOn(buildLayerArchiveTask)
+
+            publishLambdaLayerVersion.bucket = extension.bucket
+            publishLambdaLayerVersion.file = buildLayerArchiveTask.outputs.files.singleFile
 
         }
 
