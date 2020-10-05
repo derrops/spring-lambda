@@ -4,5 +4,6 @@ class SpringLambdaPluginExtension {
 
     String bucket
     String lambda
+    String functionClassifier
 
 }

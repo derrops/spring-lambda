@@ -20,8 +20,6 @@ class SpringLambdaPlugin implements Plugin<Project> {
 
 
 
-
-
         //def compileJava = project.tasks.named("compileJava")
         def buildFunctionArchive = project.tasks.register("buildFunctionArchive", Zip.class) { buildFunctionArchive ->
             
@@ -29,14 +27,23 @@ class SpringLambdaPlugin implements Plugin<Project> {
             def compileJava = project.tasks.findByName("compileJava")
             if (compileJava){
                 buildFunctionArchive.from(compileJava)
+                buildFunctionArchive.dependsOn(compileJava)
+            }
+
+            def compileGroovy = project.tasks.findByName("compileGroovy")
+            if (compileGroovy){
+                buildFunctionArchive.from(compileGroovy)
+                buildFunctionArchive.dependsOn(compileGroovy)
+            }
+
+            def processResources = project.tasks.findByName("processResources")
+            if (processResources){
+                buildFunctionArchive.from(processResources)
+                buildFunctionArchive.dependsOn(processResources)
             }
 
 
-            buildFunctionArchive.archiveClassifier.set("function")
-
-            buildFunctionArchive.doLast {
-                println "hello-from-spring-lambda"
-            }
+            buildFunctionArchive.archiveClassifier = extension.functionClassifier
 
         }
 
