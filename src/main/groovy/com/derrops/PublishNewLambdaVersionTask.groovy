@@ -8,6 +8,7 @@ import com.amazonaws.services.lambda.model.UpdateFunctionConfigurationResult
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -16,6 +17,7 @@ class PublishNewLambdaVersionTask extends DefaultTask {
 
     private File layerInfo
 
+    @Input
     private String lambdaName = project.name
 
     File code

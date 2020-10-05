@@ -1,43 +1,93 @@
 package com.derrops
 
+
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
+import org.gradle.api.internal.tasks.compile.CompileJavaBuildOperationType
 import org.gradle.api.tasks.bundling.Zip
+import org.gradle.launcher.daemon.protocol.Build
 
 class SpringLambdaPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
 
-        SpringLambdaPluginExtension extension = project.getExtensions().create("springLambda", SpringLambdaPluginExtension.class);
+        SpringLambdaPluginExtension extension = project.getExtensions().create("springLambda", SpringLambdaPluginExtension.class)
 
 
-        project.tasks.withType(Zip) { task ->
-            task.doFirst{
 
+
+
+
+
+
+
+        //def compileJava = project.tasks.named("compileJava")
+        def buildFunctionArchive = project.tasks.register("buildFunctionArchive", Zip.class) { buildFunctionArchive ->
+            
+
+            def compileJava = project.tasks.findByName("compileJava")
+            if (compileJava){
+                buildFunctionArchive.from(compileJava)
+            }
+
+
+            buildFunctionArchive.archiveClassifier.set("function")
+
+            buildFunctionArchive.doLast {
+                println "hello-from-spring-lambda"
             }
 
         }
 
-        project.task
+
+
+
+//        Zip buildFunctionArchive = project.tasks.create("buildFunctionArchive", Zip.class) {
 //
-//        project.task("hello-world").doLast {
 //
+//            println("plugin.configure")
+//            println project.tasks.forEach{println it}
+//
+//            doLast {
+//
+//                println("plugin.doLast")
+//                println project.tasks.forEach{println it}
+//
+//                def tasks = project.getTasksByName("compileJava", true)
+//                def compileJava = tasks.stream().findFirst().get()
+//                archiveClassifier = "yolo"
+//
+//                println (compileJava)JavaCompile_Decorated
+//                println(compileJava.getClass())
+//                println ("-------")
+//
+//            }
+//            doLast {
+//                println("Finished making spring-lambda.\n\n\n")
+//            }
 //        }
-//        Task dfs
-//        project.add(dfs)
 
-//        project.task("hello").doLast {
-//            System.out.println("Hello, " + extension.getGreeter())
-//            System.out.println("I have a message for You: " + extension.getMessage())
+//        Zip buildFunctionArchive = project.tasks.create("buildFunctionArchive", Zip.class) {
+//            from(compileGroovy)
+//            from(compileJava)
+//            from(processResources)
+//            include("*")
+//            doLast {
+//                println("good bye please work")
+//            }
+//        }
+//
+//        compileGroovy.forEach{ buildFunctionArchive.from(it) }
+//        compileJava.forEach{ buildFunctionArchive.from(it) }
+//        processResources.forEach{ buildFunctionArchive.from(it) }
+//        buildFunctionArchive.archiveClassifier.set("function")
+//        buildFunctionArchive.doLast {
+//            println("HELLO FROM spring-Lambda")
 //        }
 
-        project.task("hello").doLast {
 
-            System.out.println("Hello, " + extension.getBucket())
-            System.out.println("I have a message for You: " + extension.getMessage())
-        }
+        // buildLayer
 
     }
 

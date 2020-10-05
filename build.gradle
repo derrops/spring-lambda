@@ -1,6 +1,7 @@
 plugins {
     id 'groovy'
     id 'java-gradle-plugin'
+    id 'maven-publish'
 }
 
 apply plugin: 'idea'
@@ -44,8 +45,9 @@ idea {
 
 gradlePlugin {
     plugins {
-        simplePlugin {
-            id = 'com.derrops.springlambda'
+        // https://www.youtube.com/watch?v=F3DF6bQo6jk
+        springLambda {
+            id = 'com.derrops.spring-lambda'
             implementationClass = 'com.derrops.SpringLambdaPlugin'
         }
     }

@@ -7,6 +7,7 @@ import com.amazonaws.services.lambda.model.PublishLayerVersionRequest
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import com.amazonaws.services.s3.model.GetObjectRequest
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -20,8 +21,11 @@ import java.text.SimpleDateFormat
  */
 class PublishLambdaTask extends DefaultTask {
 
+    @Input
     private String runtime = "java11"
-    private final String layerName = project.name + "-layer"
+
+    @Input
+    private String layerName = project.name + "-layer"
     private String bucket
     private File file
     private File outputDir
