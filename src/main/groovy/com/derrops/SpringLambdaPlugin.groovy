@@ -56,57 +56,18 @@ class SpringLambdaPlugin implements Plugin<Project> {
             }
 
             buildLayerArchive.archiveClassifier = extension.layerClassifier
-
         }
 
 
+        def deployLayer = project.tasks.register("deployLayer", PublishToS3.class) { deployLayer ->
+            deployLayer.dependsOn(buildLayerArchive)
 
+            deployLayer.bucket = extension.bucket
 
-//        Zip buildFunctionArchive = project.tasks.create("buildFunctionArchive", Zip.class) {
-//
-//
-//            println("plugin.configure")
-//            println project.tasks.forEach{println it}
-//
-//            doLast {
-//
-//                println("plugin.doLast")
-//                println project.tasks.forEach{println it}
-//
-//                def tasks = project.getTasksByName("compileJava", true)
-//                def compileJava = tasks.stream().findFirst().get()
-//                archiveClassifier = "yolo"
-//
-//                println (compileJava)JavaCompile_Decorated
-//                println(compileJava.getClass())
-//                println ("-------")
-//
-//            }
-//            doLast {
-//                println("Finished making spring-lambda.\n\n\n")
-//            }
-//        }
+            // TODO - should rather try and use the output of the buildLayerArchiveTask
+            deployLayer.file = new File(project.buildDir.path + "/distributions/" + project.name + "-" + project.version + "-" + extension.layerClassifier + ".zip")
 
-//        Zip buildFunctionArchive = project.tasks.create("buildFunctionArchive", Zip.class) {
-//            from(compileGroovy)
-//            from(compileJava)
-//            from(processResources)
-//            include("*")
-//            doLast {
-//                println("good bye please work")
-//            }
-//        }
-//
-//        compileGroovy.forEach{ buildFunctionArchive.from(it) }
-//        compileJava.forEach{ buildFunctionArchive.from(it) }
-//        processResources.forEach{ buildFunctionArchive.from(it) }
-//        buildFunctionArchive.archiveClassifier.set("function")
-//        buildFunctionArchive.doLast {
-//            println("HELLO FROM spring-Lambda")
-//        }
-
-
-        // buildLayer
+        }
 
     }
 
