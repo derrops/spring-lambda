@@ -47,6 +47,18 @@ class SpringLambdaPlugin implements Plugin<Project> {
 
         }
 
+        def buildLayerArchive = project.tasks.register("buildLayerArchive", Zip.class) { buildLayerArchive ->
+
+            buildLayerArchive.into('java/lib') {
+                buildLayerArchive.from(project.configurations.compileClasspath)
+                buildLayerArchive.exclude ('tomcat-embed-*')
+                buildLayerArchive.exclude ('org.springframework.boot:spring-boot-starter-tomcat-*')
+            }
+
+            buildLayerArchive.archiveClassifier = extension.layerClassifier
+
+        }
+
 
 
 
