@@ -4,6 +4,7 @@ package com.derrops
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginConvention
+import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.bundling.Zip
 
 class SpringLambdaPlugin implements Plugin<Project> {
@@ -13,39 +14,12 @@ class SpringLambdaPlugin implements Plugin<Project> {
 
         SpringLambdaPluginExtension extension = project.getExtensions().create("springLambda", SpringLambdaPluginExtension.class)
 
-
-//        def buildFunctionArchive = project.tasks.register("buildFunctionArchive", Zip.class) { buildFunctionArchive ->
-//
-//
-//            def compileJava = project.tasks.findByName("compileJava")
-//            if (compileJava){
-//                buildFunctionArchive.from(compileJava)
-//                buildFunctionArchive.dependsOn(compileJava)
-//            }
-//
-//            def compileGroovy = project.tasks.findByName("compileGroovy")
-//            if (compileGroovy){
-//                buildFunctionArchive.from(compileGroovy)
-//                buildFunctionArchive.dependsOn(compileGroovy)
-//            }
-//
-//            def processResources = project.tasks.findByName("processResources")
-//            if (processResources){
-//                buildFunctionArchive.from(processResources)
-//                buildFunctionArchive.dependsOn(processResources)
-//            }
-//
-//            buildFunctionArchive.archiveClassifier = extension.functionClassifier
-//
-//        }
-
         def buildFunctionArchive = project.tasks.register("buildFunctionArchive", Zip.class) { buildFunctionArchive ->
 
             def classes = project.tasks.findByName("classes")
             if (classes) {
-                buildFunctionArchive.dependsOn(classes)
                 def sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
-                buildFunctionArchive.from(sourceSets.findByName("main").output)
+                buildFunctionArchive.from(sourceSets.findByName(SourceSet.MAIN_SOURCE_SET_NAME).output)
             }
 
             buildFunctionArchive.archiveClassifier = extension.functionClassifier
