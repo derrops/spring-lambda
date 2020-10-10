@@ -8,6 +8,7 @@ import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -19,9 +20,9 @@ class LambdaSmokeTestTask extends DefaultTask {
 
     String lambda
 
-    File file
-
     File outputDir
+
+    File payload
 
     void setLambda(String lambda) {
         this.lambda = lambda
@@ -31,18 +32,14 @@ class LambdaSmokeTestTask extends DefaultTask {
         this.outputDir = outputDir
     }
 
-    void setFile(File file) {
-        this.file = file
-    }
-
     @Input
     String getLambda() {
         return lambda
     }
 
-    @InputFiles
-    File getFile() {
-        return file
+    @InputFile
+    File getPayload() {
+        return payload
     }
 
     @OutputDirectory
@@ -65,7 +62,7 @@ class LambdaSmokeTestTask extends DefaultTask {
         }
 
         def lambdaClient = AWSLambdaClientBuilder.defaultClient()
-        String payload = getClass().getClassLoader().getResourceAsStream("dwellings.json").text
+        String payload = payload.text
 
 
         InvokeRequest invokeRequest = new InvokeRequest()
@@ -80,6 +77,8 @@ class LambdaSmokeTestTask extends DefaultTask {
         Charset charset = Charset.forName("ISO-8859-1")
         String text = charset.decode(byteBuffer).toString()
         outputFile.text = new JsonBuilder(text).toPrettyString()
+        println "Response:"
+        println new JsonBuilder(text).toPrettyString()
 
         def outputMap = new JsonSlurper().parseText(text)
         if (outputMap.statusCode == null || outputMap.statusCode != 200) {
