@@ -26,6 +26,7 @@ class SpringLambdaPlugin implements Plugin<Project> {
             def sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
             buildFunctionArchive.from(sourceSets.findByName(SourceSet.MAIN_SOURCE_SET_NAME).output)
             buildFunctionArchive.archiveClassifier = extension.functionClassifier
+            project.tasks.findByName("assemble").dependsOn(buildFunctionArchive)
         }
 
         def buildLayerArchive = project.tasks.register("buildLayerArchive", Jar.class) { buildLayerArchive ->
@@ -34,8 +35,8 @@ class SpringLambdaPlugin implements Plugin<Project> {
                     .from(project.configurations.compileClasspath)
                     .into('java/lib')
                     .exclude('tomcat-embed-*', 'org.springframework.boot:spring-boot-starter-tomcat-*')
-
             buildLayerArchive.archiveClassifier = extension.layerClassifier
+            project.tasks.findByName("assemble").dependsOn(buildLayerArchive)
         }
 
 
