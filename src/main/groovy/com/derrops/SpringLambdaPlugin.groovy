@@ -3,6 +3,8 @@ package com.derrops
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaBasePlugin
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.bundling.Zip
@@ -12,27 +14,25 @@ class SpringLambdaPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
 
+        // the extension
         SpringLambdaPluginExtension extension = project.getExtensions().create("springLambda", SpringLambdaPluginExtension.class)
 
+        // need the Java base plugin
+        project.getPluginManager().apply(JavaBasePlugin.class)
+
+
         def buildFunctionArchive = project.tasks.register("buildFunctionArchive", Zip.class) { buildFunctionArchive ->
-
-            def classes = project.tasks.findByName("classes")
-            if (classes) {
-                def sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
-                buildFunctionArchive.from(sourceSets.findByName(SourceSet.MAIN_SOURCE_SET_NAME).output)
-            }
-
+            def sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+            buildFunctionArchive.from(sourceSets.findByName(SourceSet.MAIN_SOURCE_SET_NAME).output)
             buildFunctionArchive.archiveClassifier = extension.functionClassifier
-
         }
 
         def buildLayerArchive = project.tasks.register("buildLayerArchive", Zip.class) { buildLayerArchive ->
 
-            buildLayerArchive.into('java/lib') {
-                buildLayerArchive.from(project.configurations.compileClasspath)
-                buildLayerArchive.exclude ('tomcat-embed-*')
-                buildLayerArchive.exclude ('org.springframework.boot:spring-boot-starter-tomcat-*')
-            }
+            buildLayerArchive
+                    .from(project.configurations.compileClasspath)
+                    .into('java/lib')
+                    .exclude('tomcat-embed-*', 'org.springframework.boot:spring-boot-starter-tomcat-*')
 
             buildLayerArchive.archiveClassifier = extension.layerClassifier
         }
