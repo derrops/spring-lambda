@@ -4,11 +4,9 @@ package com.derrops
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
-import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.bundling.Zip
-import org.gradle.jvm.tasks.Jar
 
 class SpringLambdaPlugin implements Plugin<Project> {
 
@@ -22,14 +20,14 @@ class SpringLambdaPlugin implements Plugin<Project> {
         project.getPluginManager().apply(JavaBasePlugin.class)
 
 
-        def buildFunctionArchive = project.tasks.register("buildFunctionArchive", Jar.class) { buildFunctionArchive ->
+        def buildFunctionArchive = project.tasks.register("buildFunctionArchive", Zip.class) { buildFunctionArchive ->
             def sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
             buildFunctionArchive.from(sourceSets.findByName(SourceSet.MAIN_SOURCE_SET_NAME).output)
             buildFunctionArchive.archiveClassifier = extension.functionClassifier
             project.tasks.findByName("assemble").dependsOn(buildFunctionArchive)
         }
 
-        def buildLayerArchive = project.tasks.register("buildLayerArchive", Jar.class) { buildLayerArchive ->
+        def buildLayerArchive = project.tasks.register("buildLayerArchive", Zip.class) { buildLayerArchive ->
 
             buildLayerArchive
                     .from(project.configurations.compileClasspath)
@@ -91,11 +89,11 @@ class SpringLambdaPlugin implements Plugin<Project> {
             publishLambdaVersionTask.lambdaName = extension.lambda
         }
 
-        def smokeTestTask = project.tasks.register("smokeTest", LambdaSmokeTestTask){ smokeTestTask ->
-            smokeTestTask.dependsOn project.tasks.findByName("publishLambdaVersionTask")
-            smokeTestTask.lambda = project.name
-            smokeTestTask.outputs.upToDateWhen { false }
-            smokeTestTask.outputs.cacheIf { false }
+        def lambdaSmokeTestTask = project.tasks.register("lambdaSmokeTest", LambdaSmokeTestTask){ lambdaSmokeTest ->
+            lambdaSmokeTest.dependsOn project.tasks.findByName("publishLambdaVersionTask")
+            lambdaSmokeTest.lambda = project.name
+            lambdaSmokeTest.outputs.upToDateWhen { false }
+            lambdaSmokeTest.outputs.cacheIf { false }
         }
 
 
