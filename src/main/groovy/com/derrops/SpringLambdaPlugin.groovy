@@ -16,14 +16,21 @@ class SpringLambdaPlugin implements Plugin<Project> {
         // the extension
         SpringLambdaPluginExtension extension = project.getExtensions().create("springLambda", SpringLambdaPluginExtension.class)
 
-        // need the Java base plugin
-        project.getPluginManager().apply(JavaBasePlugin.class)
+
+//        project.getPluginManager().apply(JavaBasePlugin.class)
+//        if (!project.getPlugins().hasPlugin("java")) {
+//            throw new Exception("No Java Plugin")
+//        }
 
 
         def buildFunctionArchive = project.tasks.register("buildFunctionArchive", Zip.class) { buildFunctionArchive ->
             def sourceSets = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
             buildFunctionArchive.from(sourceSets.findByName(SourceSet.MAIN_SOURCE_SET_NAME).output)
+
             buildFunctionArchive.archiveClassifier = extension.functionClassifier
+            buildFunctionArchive.preserveFileTimestamps = false
+            buildFunctionArchive.reproducibleFileOrder = true
+
             project.tasks.findByName("assemble").dependsOn(buildFunctionArchive)
         }
 
@@ -33,7 +40,11 @@ class SpringLambdaPlugin implements Plugin<Project> {
                     .from(project.configurations.compileClasspath)
                     .into('java/lib')
                     .exclude('tomcat-embed-*', 'org.springframework.boot:spring-boot-starter-tomcat-*')
+
             buildLayerArchive.archiveClassifier = extension.layerClassifier
+            buildLayerArchive.preserveFileTimestamps = false
+            buildLayerArchive.reproducibleFileOrder = true
+
             project.tasks.findByName("assemble").dependsOn(buildLayerArchive)
         }
 

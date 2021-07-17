@@ -30,7 +30,7 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-lambda'
 
     implementation gradleApi()
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompileOnly group: 'junit', name: 'junit', version: '4.12'
 
 
 }
